@@ -1,0 +1,45 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELED
+  FAILED
+}
+
+model Registration {
+  id                 String        @id @default(cuid())
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  // Form details
+  teamName           String
+  captainName        String
+  telegram           String
+  phone              String
+  email              String
+
+  member1            String       // optional if you allow empty
+  member2            String
+  member3            String
+  member4            String
+  member5            String?
+
+  timeSlot           String         // keep as string for now (can be enum later)
+  bundleId           String
+
+  // Payment
+  paymentStatus      PaymentStatus  @default(PENDING)
+  amountCents        Int
+  currency           String         @default("sgd")
+
+  stripeSessionId    String?        @unique
+  stripePaymentIntentId String?     @unique
+}
