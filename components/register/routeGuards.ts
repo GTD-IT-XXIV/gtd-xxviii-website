@@ -1,4 +1,4 @@
-import { RegisterState } from "@/lib/registerStore";
+import { RegisterState } from "@/lib/RegisterStore";
 
 export function canGoDetails(state: RegisterState) {
   return Boolean(state.bundleId);
