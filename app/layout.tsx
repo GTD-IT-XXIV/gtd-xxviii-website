@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 
 
 const uncialAntiqua = localFont({
-  src: "./fonts/UncialAntiqua-Regular.ttf",
+  src: "../public/Fonts/UncialAntiqua-Regular.ttf",
   variable: "--font-uncial",
 });
 
