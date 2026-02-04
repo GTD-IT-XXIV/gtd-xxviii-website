@@ -10,7 +10,7 @@ export default function Page() {
         <div
           className="
             absolute inset-0
-            bg-[url('/Images/hero_bg.jpg')]
+            bg-[url('/images/hero_bg.jpg')]
             bg-cover bg-center bg-no-repeat
             opacity-45
             transition-opacity duration-300
