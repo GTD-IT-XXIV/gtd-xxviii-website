@@ -52,7 +52,14 @@ export function SummaryCard() {
       ].join(" ")}
     >
       {/* Accent bar */}
-      <div className="mb-4 h-1 w-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-red-600 opacity-60" />
+      <div
+      className={[
+        "mb-4 h-1 w-full rounded-full transition-all duration-300",
+        ready
+          ? "bg-[#29cb33] shadow-[0_0_8px_rgba(41,203,51,0.6)]"
+          : "bg-[#cb2929] shadow-[0_0_6px_rgba(203,41,41,0.6)]",
+      ].join(" ")}
+    />
 
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">

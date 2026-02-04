@@ -5,12 +5,12 @@ import Image from "next/image";
 export default function Page() {
   return (
     <main>
-      <section className="group relative h-screen flex flex-col items-center justify-center overflow-hidden">
+      <section className="group relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background image layer */}
         <div
           className="
             absolute inset-0
-            bg-[url('/Images/main_background.png')]
+            bg-[url('/Images/hero_bg.jpg')]
             bg-cover bg-center bg-no-repeat
             opacity-45
             transition-opacity duration-300
@@ -22,6 +22,20 @@ export default function Page() {
             [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]
           "
         />
+        {/* Edge fades (black overlays) */}
+        <div className="pointer-events-none absolute inset-0">
+          {/* Bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#0a0a0a]" />
+
+          {/* Top fade */}
+          <div className="absolute inset-x-0 top-0 h-30 bg-gradient-to-t from-transparent to-[#0a0a0a]" />
+
+          {/* Left fade */}
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+
+          {/* Right fade */}
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+        </div>
 
         {/* Optional dark tint */}
         <div className="absolute inset-0 bg-black/20" />
@@ -65,13 +79,39 @@ export default function Page() {
       </section>
 
 
+      <section className="relative h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
+      <h2
+          className="
+            relative flex items-center gap-6
+            text-4xl md:text-5xl
+            [font-family:var(--font-uncial)]
+            tracking-widest
+            text-white/90
+            px-6
+            mb-10
+            z-30
+          "
+        >
+          {/* Left line */}
+          <span className="relative h-[2px] w-28 md:w-44">
+            {/* core line */}
+            <span className="absolute inset-0 bg-gradient-to-l from-[#961818] via-[#ff4d4d] to-transparent" />
+            {/* glow falloff */}
+            <span className="absolute inset-0 blur-md opacity-80 bg-gradient-to-l from-[#961818] via-[#ff4d4d] to-transparent" />
+          </span>
 
-      <section className="h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
-        <h2 className="text-4xl md:text-5xl mb-10 text-white tracking-widest">
           TRAILER
+
+          {/* Right line */}
+          <span className="relative h-[2px] w-28 md:w-44">
+            {/* core line */}
+            <span className="absolute inset-0 bg-gradient-to-r from-[#961818] via-[#ff4d4d] to-transparent" />
+            {/* glow falloff */}
+            <span className="absolute inset-0 blur-md opacity-80 bg-gradient-to-r from-[#961818] via-[#ff4d4d] to-transparent" />
+          </span>
         </h2>
 
-        <div className="w-full max-w-6xl px-4">
+        <div className="w-full max-w-5xl px-4 z-30">
           <div className="aspect-video rounded-xl overflow-hidden shadow-2xl">
             <iframe
               className="w-full h-full"
@@ -83,7 +123,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="min-h-screen w-full flex items-center">
+      <section className="min-h-screen w-full flex items-center bg-[#080808]">
         <div className="w-full max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
             

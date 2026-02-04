@@ -1,9 +1,10 @@
-
+"use client";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
 import localFont from "next/font/local";
 import { Instagram, Linkedin, Music2 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 
 const uncialAntiqua = localFont({
@@ -12,10 +13,24 @@ const uncialAntiqua = localFont({
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  const linkClass = (href: string) =>
+    `
+    relative text-[22px] transition-all duration-200 ease-out
+    hover:opacity-70 hover:scale-110
+    after:absolute after:left-0 after:-bottom-1
+    after:h-[2px] after:transition-all after:duration-300
+    ${
+      pathname === href
+        ? "text-[#961818] after:w-full after:bg-[#961818] scale-110"
+        : "text-white after:w-0 after:bg-white hover:after:w-full"
+    }
+    `;
   return (
     <html lang="en" className={uncialAntiqua.variable}>
       <body className="min-h-screen flex flex-col">
-        <header className="bg-[#961818] text-white">
+        <header className="bg-#0a0a0a text-white">
           <nav className="w-full h-20 px-[60px] flex items-center justify-between">
             {/* Logo */}
              <Link href="/" aria-label="Go to homepage">
@@ -31,16 +46,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Right links */}
             <div className="flex gap-10">
-              <Link href="/" className="text-[22px] hover:opacity-70 hover:scale-115 transition-all duration-200 ease-out">
+              <Link href="/" className={linkClass("/")}>
                 Home
               </Link>
-              <Link href="/register" className="text-[22px] hover:opacity-70 hover:scale-115 transition-all duration-200 ease-out">
+
+              <Link href="/register" className={linkClass("/register")}>
                 Register
               </Link>
-              <Link href="/about" className="text-[22px] hover:opacity-70 hover:scale-115 transition-all duration-200 ease-out">
+
+              <Link href="/about" className={linkClass("/about")}>
                 About Us
               </Link>
             </div>
+            <div></div>
           </nav>
         </header>
 
