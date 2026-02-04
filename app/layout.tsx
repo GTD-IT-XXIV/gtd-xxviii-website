@@ -1,8 +1,10 @@
+
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
 import localFont from "next/font/local";
 import { Instagram, Linkedin, Music2 } from "lucide-react";
+
 
 const uncialAntiqua = localFont({
   src: "../public/fonts/UncialAntiqua-Regular.ttf",
