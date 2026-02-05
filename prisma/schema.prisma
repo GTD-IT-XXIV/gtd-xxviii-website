@@ -7,6 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -15,7 +16,7 @@ enum PaymentStatus {
 }
 
 model Registration {
-  id                 String        @id @default(cuid())
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
@@ -26,13 +27,13 @@ model Registration {
   phone              String
   email              String
 
-  member1            String       // optional if you allow empty
+  member1            String       
   member2            String
   member3            String
   member4            String
   member5            String?
 
-  timeSlot           String         // keep as string for now (can be enum later)
+  timeSlot           String         @unique  // keep as string for now (can be enum later)
   bundleId           String
 
   // Payment

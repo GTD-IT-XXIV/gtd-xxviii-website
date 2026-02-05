@@ -22,6 +22,63 @@ export default function ConfirmPage() {
   const bundle = getBundle(state.bundleId);
   const slot = getSlot(state.slotId);
 
+  async function handleConfirmAndPay() {
+    if (!state.bundleId || !state.slotId || !state.details) {
+      alert("Missing registration data");
+      return;
+    }
+
+    // 1) Create registration in DB
+    const createRes = await fetch("/api/register/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        bundleId: state.bundleId,
+        timeSlot: state.slotId, // IMPORTANT
+
+        teamName: state.details.groupName,
+        captainName: state.details.captainName,
+        email: state.details.email,
+        phone: state.details.phone,
+        telegram: state.details.telegram,
+
+        member1: state.details.member1,
+        member2: state.details.member2,
+        member3: state.details.member3,
+        member4: state.details.member4,
+        member5: state.details.member5,
+      }),
+    });
+
+    const createData = await createRes.json();
+    if (!createRes.ok) {
+      alert(createData.error ?? "Failed to create registration");
+      return;
+    }
+
+    const registrationId = createData.registrationId;
+
+    // 2) Create Stripe checkout session
+    const payRes = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        bundleId: state.bundleId,
+        registrationId,
+      }),
+    });
+
+    const payData = await payRes.json();
+    if (!payRes.ok) {
+      alert(payData.error ?? "Failed to start payment");
+      return;
+    }
+
+    // 3) Redirect to Stripe
+    window.location.href = payData.url;
+  }
+
+
   return (
     <RegisterShell title="Register • Confirmation">
       <div>
@@ -57,12 +114,10 @@ export default function ConfirmPage() {
 
         <StepNavButtons
           backHref="/register/slot"
-          nextLabel="Confirm"
-          onNext={() => {
-            clearRegisterState();
-            router.push("/register/payment");
-          }}
+          nextLabel="Confirm & Pay"
+          onNext={handleConfirmAndPay}
         />
+
 
         <p className="mt-3 text-xs text-gray-500">
           (For now, Confirm just clears the form and returns Home. Later we can

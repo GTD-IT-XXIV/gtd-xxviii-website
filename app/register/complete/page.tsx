@@ -1,39 +1,35 @@
-import Stripe from "stripe";
-import RegisterShell from "@/components/register/RegisterShell";
+"use client";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { clearRegisterState } from "@/lib/RegisterStore";
 
-export default async function CompletePage({
-  searchParams,
-}: {
-  searchParams: { session_id?: string };
-}) {
-  const sessionId = searchParams.session_id;
+export default function RegisterCompletePage() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const sessionId = params.get("session_id");
+  useEffect(() => {
+    clearRegisterState();
+  }, []);
 
-  if (!sessionId) {
-    return (
-      <RegisterShell title="Payment complete">
-        <p className="text-sm text-gray-600">Missing session.</p>
-      </RegisterShell>
-    );
-  }
+  useEffect(() => {
+    // Optional: wait a bit so user sees success message
+    const t = setTimeout(() => {
+      router.replace("/"); // go home
+    }, 3000);
 
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+    return () => clearTimeout(t);
+  }, [router]);
 
   return (
-    <RegisterShell title="Payment complete">
-      <p className="text-sm text-gray-600">
-        Thanks! Your payment status: <span className="font-semibold">{session.payment_status}</span>
+    <main className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-semibold">Payment successful 🎉</h1>
+      <p className="mt-4 text-gray-600">
+        Your registration has been confirmed.
       </p>
-
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700">
-        <div>Session: {session.id}</div>
-        <div>Amount: {(session.amount_total ?? 0) / 100} {session.currency?.toUpperCase()}</div>
-      </div>
-
-      <p className="mt-4 text-xs text-gray-500">
-        Note: This page is for display. Fulfillment should be handled via webhooks. 
+      <p className="mt-2 text-sm text-gray-400">
+        Redirecting you to the home page…
       </p>
-    </RegisterShell>
+    </main>
   );
 }

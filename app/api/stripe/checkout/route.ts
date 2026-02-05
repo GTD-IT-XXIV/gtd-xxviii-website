@@ -3,14 +3,16 @@ import { NextResponse } from "next/server";
 import { BUNDLES } from "@/lib/RegisterData";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
-if (!secretKey) {
-  throw new Error("Missing STRIPE_SECRET_KEY. Check .env.local is in project root and restart npm run dev.");
-}
+if (!secretKey) throw new Error("Missing STRIPE_SECRET_KEY");
 
 const stripe = new Stripe(secretKey);
 
 export async function POST(req: Request) {
-  const { bundleId } = await req.json();
+  const { bundleId, registrationId } = await req.json();
+
+  if (!registrationId) {
+    return NextResponse.json({ error: "Missing registrationId" }, { status: 400 });
+  }
 
   const bundle = BUNDLES.find((b) => b.id === bundleId);
   if (!bundle) return NextResponse.json({ error: "Invalid bundle" }, { status: 400 });
@@ -37,6 +39,10 @@ export async function POST(req: Request) {
         quantity: 1,
       },
     ],
+    metadata: {
+      registrationId: String(registrationId),
+      bundleId: String(bundleId),
+    },
     success_url: `${origin}/register/complete?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/register/payment?canceled=1`,
   });
