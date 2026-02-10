@@ -1,14 +1,17 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import SiteShell from "@/components/SiteShell";
 import { SneakPeekGallery } from "@/components/SneakPeekGallery";
 import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  const [muted, setMuted] = useState(true);
   const [cinematic, setCinematic] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -17,32 +20,50 @@ export default function Page() {
     };
   }, []);
 
+  const tryPlay = async () => {
+    const v = videoRef.current;
+    if (!v) return false;
+
+    try {
+      v.playsInline = true;
+      v.preload = "auto";
+
+      v.muted = true;
+      v.volume = 0.5;
+      v.currentTime = 0;
+
+      await v.play();
+
+      setMuted(true);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const startCinematic = async () => {
     if (cinematic || exiting) return;
 
     setExiting(true);
 
-    window.setTimeout(async () => {
-      setCinematic(true);
+    const ok = await tryPlay();
+    if (!ok) {
+      setNeedsTap(true);
+      setExiting(false);
+      return;
+    }
 
-      requestAnimationFrame(async () => {
-        try {
-          if (videoRef.current) {
-            videoRef.current.volume = 0.5;
-            await videoRef.current.play();
-          }
-        } catch {
-        }
-      });
-    }, 900);
+    setNeedsTap(false);
+    setCinematic(true);
   };
 
   const endCinematicWithHold = () => {
     if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
 
     holdTimerRef.current = window.setTimeout(() => {
+      setNeedsTap(false);
       setCinematic(false);
-
+      setMuted(true);
 
       window.setTimeout(() => {
         setExiting(false);
@@ -56,6 +77,15 @@ export default function Page() {
     }, 2000);
   };
 
+  const tapToPlay = async () => {
+    const ok = await tryPlay();
+    if (!ok) return;
+
+    setNeedsTap(false);
+    setExiting(true);
+    setCinematic(true);
+  };
+
   const skipCinematic = () => {
     if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
 
@@ -65,6 +95,7 @@ export default function Page() {
     }
 
     setCinematic(false);
+    setMuted(true);
 
     window.setTimeout(() => {
       setExiting(false);
@@ -72,7 +103,7 @@ export default function Page() {
   };
 
   return (
-    <main>
+    <SiteShell>
       <section className="group relative isolate w-full h-screen flex flex-col items-center justify-center overflow-hidden">
         <div
           className={`
@@ -99,21 +130,44 @@ export default function Page() {
         <div className="absolute inset-0 bg-black/20" />
 
         {/* Video overlay */}
+        {needsTap && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={tapToPlay}
+              className="
+                px-8 py-4 rounded-xl
+                bg-black/60 text-white
+                ring-1 ring-white/25
+                backdrop-blur
+                text-sm tracking-widest
+                hover:bg-black/75
+              "
+            >
+              TAP TO PLAY
+            </button>
+          </div>
+          )}
+
         <div
           className={`
             absolute inset-0 z-20
             transition-opacity ease-out
             ${cinematic ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
           `}
-          style={{ transitionDuration: cinematic ? "900ms" : "1400ms" }} // ✅ slower fade out when leaving
+          style={{ transitionDuration: cinematic ? "900ms" : "1400ms" }}
         >
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
             src={"/videos/Fight%20Scene.mp4"}
             playsInline
+            preload="auto"
+            poster="/images/hero_bg.jpg"
             onEnded={endCinematicWithHold}
+            muted
           />
+
           <button
             type="button"
             onClick={skipCinematic}
@@ -129,6 +183,31 @@ export default function Page() {
           >
             SKIP
           </button>
+          {cinematic && muted && (
+            <button
+              type="button"
+              onClick={() => {
+                const v = videoRef.current;
+                if (!v) return;
+
+                v.muted = false;
+                v.volume = 0.5;
+                setMuted(false);
+              }}
+              className="
+                absolute top-6 left-6 z-40
+                px-4 py-2 rounded-lg
+                bg-black/50 text-white/90 text-xs tracking-widest
+                ring-1 ring-white/20
+                backdrop-blur
+                transition-all duration-300
+                hover:bg-black/70
+              "
+            >
+              🔊 UNMUTE
+            </button>
+          )}
+
           <div className="pointer-events-none absolute inset-0 bg-black/20" />
         </div>
 
@@ -136,7 +215,7 @@ export default function Page() {
           <div
             className="
               absolute
-              -top-46 sm:-top-46 md:-top-56
+              -top-46 sm:-top-46 md:-top-62
               left-1/2
               -translate-x-1/2
               pointer-events-none
@@ -161,6 +240,7 @@ export default function Page() {
               priority
             />
           </div>
+
           {/* Title (clickable) */}
           <button
             type="button"
@@ -317,17 +397,17 @@ export default function Page() {
         coverCta="Click to see more"
         coverType="Escape Room"
         photos={[
-          "/images/escape_room/1.jpg",
-          "/images/escape_room/2.jpg",
-          "/images/escape_room/3.jpg",
-          "/images/escape_room/4.jpg",
-          "/images/escape_room/5.jpg",
-          "/images/escape_room/6.jpg",
-          "/images/escape_room/7.jpg",
-          "/images/escape_room/8.jpg",
-          "/images/escape_room/9.jpg",
-          "/images/escape_room/10.jpg",
-          "/images/escape_room/11.jpg",
+          "/images/escape_room/1.JPG",
+          "/images/escape_room/2.JPG",
+          "/images/escape_room/3.JPG",
+          "/images/escape_room/4.JPG",
+          "/images/escape_room/5.JPG",
+          "/images/escape_room/6.JPG",
+          "/images/escape_room/7.JPG",
+          "/images/escape_room/8.JPG",
+          "/images/escape_room/9.JPG",
+          "/images/escape_room/10.JPG",
+          "/images/escape_room/11.JPG",
         ]}
       />
 
@@ -339,15 +419,15 @@ export default function Page() {
         coverCta="Click to see more"
         coverType="Case File"
         photos={[
-          "/images/casefile/1.jpg",
-          "/images/casefile/2.jpg",
-          "/images/casefile/3.jpg",
-          "/images/casefile/4.jpg",
-          "/images/casefile/5.jpg",
-          "/images/casefile/6.jpg",
-          "/images/casefile/7.jpg",
+          "/images/casefile/1.JPG",
+          "/images/casefile/2.JPG",
+          "/images/casefile/3.JPG",
+          "/images/casefile/4.JPG",
+          "/images/casefile/5.JPG",
+          "/images/casefile/6.JPG",
+          "/images/casefile/7.JPG",
         ]}
       />
-    </main>
+    </SiteShell>
   );
 }
