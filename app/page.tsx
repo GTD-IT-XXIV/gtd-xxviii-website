@@ -338,8 +338,13 @@ export default function Page() {
 
       <section className="mt-20 mb-20 w-full flex items-center bg-[#080808]">
         <div className="w-full max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
-            
+          <div
+            className={`
+              grid grid-cols-1 md:grid-cols-3
+              gap-0 md:gap-10
+              items-center
+            `}
+          >
             <div className="md:col-span-1">
               <Image
                 src="/images/arcanex logo (white outline).png"
@@ -350,7 +355,7 @@ export default function Page() {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 mb-8 md:mb-0">
               <h2 className="text-4xl mb-4">
                 About Arcanex
               </h2>
@@ -362,7 +367,8 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section className="relative mt-6 flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
+
+      <section className="relative mt-6 md:mt-10 flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
       <h2
           className="
             relative flex flex-wrap items-center justify-center gap-4
@@ -372,7 +378,7 @@ export default function Page() {
             tracking-widest
             text-white/90
             px-4 sm:px-6
-            mb-10
+            mb-0 md:mb-8
             z-30
           "
         >
