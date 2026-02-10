@@ -10,15 +10,15 @@ export const BUNDLES: Bundle[] = [
   {
     id: "early",
     name: "Early Bird Bundle",
-    description: "Entry package. Perfect for first-timers.",
-    priceText: "$20",
+    description: "",
+    priceText: "$42",
     amountCents: 50,
   },
   {
     id: "standard",
     name: "Standard Bundle",
-    description: "Most popular. Includes extra goodies.",
-    priceText: "$35",
+    description: "",
+    priceText: "$48",
     amountCents: 50,
   },
 ];

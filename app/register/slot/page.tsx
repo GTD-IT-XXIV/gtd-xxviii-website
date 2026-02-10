@@ -15,6 +15,8 @@ export default function SlotPage() {
   const [booked, setBooked] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
   useEffect(() => {
     if (!hydrated) return;
     if (!canGoSlot(state)) router.replace("/register/details");
@@ -28,10 +30,6 @@ export default function SlotPage() {
         const res = await fetch("/api/timeslots/booked", { cache: "no-store" });
         const data = await res.json();
         setBooked(new Set((data?.booked ?? []).map((x: any) => String(x).trim())));
-        console.log("BOOKED FROM API:", data);
-        console.log("BOOKED SET:", Array.from(new Set((data?.booked ?? []).map((x:any)=>String(x).trim()))));
-        console.log("SLOTS IDS:", SLOTS.map(s => s.id));
-
       } catch {
         setBooked(new Set());
       } finally {
@@ -44,13 +42,39 @@ export default function SlotPage() {
     return SLOTS.filter((s) => !booked.has(String(s.id).trim()));
   }, [booked]);
 
-  // If user had a selected slot that is now booked, clear it
+  const dateOptions = useMemo(() => {
+    const unique = Array.from(new Set(visibleSlots.map((s) => s.dateText)));
+    return unique;
+  }, [visibleSlots]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!selectedDate && dateOptions.length > 0) {
+      setSelectedDate(dateOptions[0]);
+    }
+  }, [hydrated, selectedDate, dateOptions]);
+
+  const filteredSlots = useMemo(() => {
+    if (!selectedDate) return [];
+    return visibleSlots.filter((s) => s.dateText === selectedDate);
+  }, [visibleSlots, selectedDate]);
+
   useEffect(() => {
     if (!hydrated) return;
     if (state.slotId && booked.has(state.slotId)) {
       setState((prev) => ({ ...prev, slotId: null }));
     }
   }, [hydrated, booked, state.slotId, setState]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!state.slotId) return;
+
+    const chosen = SLOTS.find((s) => s.id === state.slotId);
+    if (chosen && selectedDate && chosen.dateText !== selectedDate) {
+      setState((prev) => ({ ...prev, slotId: null }));
+    }
+  }, [hydrated, selectedDate, state.slotId, setState]);
 
   if (!hydrated) return null;
 
@@ -62,13 +86,36 @@ export default function SlotPage() {
           {loading && <span className="ml-2 text-gray-400">Loading…</span>}
         </p>
 
+        {/* Date dropdown */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-black">
+            Select date
+          </label>
+          <select
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-gray-900 focus:outline-none"
+            disabled={loading || dateOptions.length === 0}
+          >
+            {dateOptions.length === 0 ? (
+              <option value="">No dates available</option>
+            ) : (
+              dateOptions.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+
         <div className="mt-6 grid gap-3">
-          {visibleSlots.length === 0 ? (
+          {filteredSlots.length === 0 ? (
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 text-sm text-gray-600">
-              No slots left. Please check back later.
+              No slots left for {selectedDate || "this date"}. Please choose another date.
             </div>
           ) : (
-            visibleSlots.map((s) => {
+            filteredSlots.map((s) => {
               const selected = state.slotId === s.id;
 
               return (
@@ -92,9 +139,7 @@ export default function SlotPage() {
                   <span
                     className={[
                       "rounded-full px-3 py-1 text-xs",
-                      selected
-                        ? "bg-gray-900 text-white"
-                        : "bg-gray-100 text-gray-700",
+                      selected ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700",
                     ].join(" ")}
                   >
                     {selected ? "Selected" : "Select"}

@@ -34,7 +34,7 @@ export default function ConfirmPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         bundleId: state.bundleId,
-        timeSlot: state.slotId, // IMPORTANT
+        timeSlot: state.slotId,
 
         teamName: state.details.groupName,
         captainName: state.details.captainName,

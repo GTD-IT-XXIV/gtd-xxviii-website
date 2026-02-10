@@ -72,7 +72,6 @@ export default function DetailsPage() {
   const member2Ok = member2.trim().length >= 2;
   const member3Ok = member3.trim().length >= 2;
   const member4Ok = member4.trim().length >= 2;
-  // member5 optional: ok if empty OR >= 2 chars
   const member5Ok = member5.trim().length === 0 || member5.trim().length >= 2;
 
   const ok =
@@ -247,7 +246,6 @@ export default function DetailsPage() {
           setState((prev) => ({
             ...prev,
             details: {
-              // keep existing keys if you want, but adding these is fine
               groupName: groupName.trim(),
               captainName: captainName.trim(),
               email: email.trim(),

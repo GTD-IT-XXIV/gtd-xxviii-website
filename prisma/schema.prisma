@@ -20,7 +20,6 @@ model Registration {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
-  // Form details
   teamName           String
   captainName        String
   telegram           String
@@ -33,14 +32,21 @@ model Registration {
   member4            String
   member5            String?
 
-  timeSlot           String         @unique  // keep as string for now (can be enum later)
+  timeSlot           String?        @unique
   bundleId           String
 
-  // Payment
   paymentStatus      PaymentStatus  @default(PENDING)
   amountCents        Int
   currency           String         @default("sgd")
 
-  stripeSessionId    String?        @unique
-  stripePaymentIntentId String?     @unique
+  stripeSessionId        String?
+  stripePaymentIntentId  String?
+
+  bundleHoldUntil    DateTime?
+  slotHoldUntil      DateTime? 
+
+  @@index([stripeSessionId])
+  @@index([stripePaymentIntentId])
+  @@index([slotHoldUntil])
 }
+
