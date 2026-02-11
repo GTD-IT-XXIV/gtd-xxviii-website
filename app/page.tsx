@@ -49,6 +49,7 @@ export default function Page() {
     const ok = await tryPlay();
     if (!ok) {
       setNeedsTap(true);
+      setCinematic(true);
       setExiting(false);
       return;
     }
@@ -77,14 +78,38 @@ export default function Page() {
     }, 2000);
   };
 
-  const tapToPlay = async () => {
-    const ok = await tryPlay();
-    if (!ok) return;
+  const tapToPlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
 
-    setNeedsTap(false);
-    setExiting(true);
-    setCinematic(true);
+    // Make sure the layer is visible (we already do this via (cinematic || needsTap))
+    v.playsInline = true;
+    v.preload = "auto";
+    v.muted = true;
+    v.volume = 0.5;
+    v.currentTime = 0;
+
+    const p = v.play();
+    if (!p) {
+      // old fallback
+      setMuted(true);
+      setNeedsTap(false);
+      setExiting(true);
+      setCinematic(true);
+      return;
+    }
+
+    p.then(() => {
+      setMuted(true);
+      setNeedsTap(false);
+      setExiting(true);
+      setCinematic(true);
+    }).catch(() => {
+      // still blocked
+      setNeedsTap(true);
+    });
   };
+
 
   const skipCinematic = () => {
     if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
@@ -134,7 +159,7 @@ export default function Page() {
           <div className="absolute inset-0 z-30 flex items-center justify-center">
             <button
               type="button"
-              onClick={tapToPlay}
+              onPointerDown={tapToPlay}
               className="
                 px-8 py-4 rounded-xl
                 bg-black/60 text-white
@@ -153,9 +178,9 @@ export default function Page() {
           className={`
             absolute inset-0 z-20
             transition-opacity ease-out
-            ${cinematic ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+            ${(cinematic || needsTap) ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
           `}
-          style={{ transitionDuration: cinematic ? "900ms" : "1400ms" }}
+          style={{ transitionDuration: (cinematic || needsTap) ? "900ms" : "1400ms" }}
         >
           <video
             ref={videoRef}

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 const EARLY_BIRD_LIMIT = 3;
 const EARLY_BIRD_CENTS = 4200; // 42 SGD
-const REGULAR_CENTS = 50;    // 48 SGD
+const REGULAR_CENTS = 4800;    // 48 SGD
 
 const HOLD_MS = 3 * 60 * 1000;
 
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
           member1: data.member1,
           member2: data.member2,
           member3: data.member3,
-          member4: data.member4,
+          member4: data.member4 ? String(data.member4) : null,
           member5: data.member5 ? String(data.member5) : null,
 
           timeSlot,

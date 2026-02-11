@@ -11,7 +11,7 @@ const HOLD_MS = 3 * 60 * 1000;
 
 const PRICES: Record<string, { name: string; amountCents: number }> = {
   early: { name: "Early Bird Bundle", amountCents: 4200 },
-  standard: { name: "Standard Bundle", amountCents: 50 },
+  standard: { name: "Standard Bundle", amountCents: 4800 },
 };
 
 export async function POST(req: Request) {

@@ -48,11 +48,6 @@ export default function RegisterPage() {
     <RegisterShell title="Register • Choose a bundle">
       <p className="text-sm text-gray-600">
         Select an event bundle to continue.
-        {early && (
-          <span className="ml-2 text-xs text-gray-500">
-            (Early Bird: {early.remaining}/{early.limit} left)
-          </span>
-        )}
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
