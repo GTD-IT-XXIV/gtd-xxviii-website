@@ -19,7 +19,6 @@ export type RegisterState = {
   slotId: string | null;
 };
 
-// bump version so old storage doesn't conflict
 const KEY = "register_state_v2";
 
 export const defaultRegisterState: RegisterState = {
@@ -58,8 +57,6 @@ function coerceDetails(details: any): BookingDetails | null {
     };
   }
 
-  // OLD shape migration: { fullName, email, phone }
-  // Map fullName -> captainName, rest empty
   if ("fullName" in details || "email" in details || "phone" in details) {
     return {
       groupName: "",
@@ -84,7 +81,7 @@ export function readRegisterState(): RegisterState {
   try {
     const raw = window.localStorage.getItem(KEY);
 
-    // Optional: also try reading v1 once, then rewrite into v2
+
     const rawV1 = !raw ? window.localStorage.getItem("register_state_v1") : null;
 
     const source = raw ?? rawV1;
@@ -98,10 +95,8 @@ export function readRegisterState(): RegisterState {
       slotId: typeof parsed.slotId === "string" ? parsed.slotId : null,
     };
 
-    // If we loaded from v1, upgrade storage to v2 so next load is clean
     if (!raw && rawV1) {
       writeRegisterState(next);
-      // optionally clear v1
       window.localStorage.removeItem("register_state_v1");
     }
 
@@ -119,11 +114,9 @@ export function writeRegisterState(next: RegisterState) {
 export function clearRegisterState() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(KEY);
-  // also clear old key if it exists
   window.localStorage.removeItem("register_state_v1");
 }
 
-// Helpers to display summary
 export function getBundle(bundleId: string | null) {
   return BUNDLES.find((b) => b.id === bundleId) ?? null;
 }

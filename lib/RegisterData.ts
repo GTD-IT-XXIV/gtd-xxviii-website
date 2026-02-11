@@ -29,7 +29,6 @@ export type Slot = {
   dateText: string;
 };
 
-// Mock slots (replace with real availability later)
 export const SLOTS: Slot[] = [
   { id: "slot-1", label: "10:00 – 12:00", dateText: "Sat, Feb 28" },
   { id: "slot-2", label: "11:30 – 13:30", dateText: "Sat, Feb 28" },

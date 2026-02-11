@@ -53,9 +53,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Already paid" }, { status: 409 });
   }
 
-  // Enforce early-bird capacity with holds + paid
   if (bundleId === "early") {
-    // If this registration already has an active early hold, keep it.
     const alreadyHoldingEarly =
       reg.bundleId === "early" && reg.bundleHoldUntil && reg.bundleHoldUntil > now;
 
@@ -76,7 +74,6 @@ export async function POST(req: Request) {
     }
   }
 
-  // Lock selection + price on DB (source of truth)
   const price = PRICES[bundleId];
   const currency = (reg.currency ?? "sgd").toLowerCase();
 
@@ -86,8 +83,8 @@ export async function POST(req: Request) {
       bundleId,
       amountCents: price.amountCents,
       paymentStatus: "PENDING",
-      slotHoldUntil: holdUntil,   // you already use this
-      bundleHoldUntil: holdUntil, // new: early-bird inventory hold
+      slotHoldUntil: holdUntil,  
+      bundleHoldUntil: holdUntil, 
     },
   });
 

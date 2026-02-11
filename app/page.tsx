@@ -69,7 +69,6 @@ export default function Page() {
       window.setTimeout(() => {
         setExiting(false);
 
-        // Reset video after UI starts returning (prevents flash)
         if (videoRef.current) {
           videoRef.current.pause();
           videoRef.current.currentTime = 0;
@@ -85,19 +84,15 @@ export default function Page() {
     const v = videoRef.current;
     if (!v) return;
 
-    // Ensure the video layer is shown
     setCinematic(true);
 
-    // Configure BEFORE play
     v.playsInline = true;
     v.muted = true;
     v.volume = 0.5;
     v.currentTime = 0;
 
-    // Optional, but helps some iOS cases
     v.load();
 
-    // Optimistically remove overlay so it doesn't block UI
     setNeedsTap(false);
 
     const p = v.play();
@@ -105,11 +100,9 @@ export default function Page() {
 
     p.then(() => {
       setMuted(true);
-      // only after playback starts, do your “exit” animation if you want
       setExiting(true);
     }).catch((err) => {
       console.log("play() failed:", err?.name, err?.message, err);
-      // bring overlay back if still blocked / unsupported
       setNeedsTap(true);
     });
   };

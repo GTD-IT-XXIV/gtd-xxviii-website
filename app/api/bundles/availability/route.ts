@@ -6,7 +6,6 @@ const EARLY_BIRD_LIMIT = 3;
 export async function GET() {
   const now = new Date();
 
-  // "Claimed" early bird = either already PAID, or currently held (bundleHoldUntil not expired)
   const claimed = await prisma.registration.count({
     where: {
       bundleId: "early",

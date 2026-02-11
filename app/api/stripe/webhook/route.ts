@@ -11,7 +11,6 @@ function isObjectId(s: string) {
 }
 
 export async function POST(req: Request) {
-  console.log("✅ WEBHOOK HIT");
   const sig = req.headers.get("stripe-signature");
   const body = await req.text();
 
@@ -36,7 +35,6 @@ export async function POST(req: Request) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
 
-        // Only mark PAID if Stripe says paid
         if (session.payment_status !== "paid") break;
 
         const registrationId = session.metadata?.registrationId;
@@ -54,7 +52,6 @@ export async function POST(req: Request) {
             ? session.payment_intent
             : session.payment_intent?.id ?? null;
 
-        // Idempotent: updateMany won't throw if record was deleted
         await prisma.registration.updateMany({
           where: { id: registrationId },
           data: {
@@ -62,7 +59,6 @@ export async function POST(req: Request) {
             stripeSessionId,
             stripePaymentIntentId,
 
-            // ✅ clear holds
             slotHoldUntil: null,
             bundleHoldUntil: null,
           },
@@ -81,7 +77,6 @@ export async function POST(req: Request) {
             select: { id: true, paymentStatus: true },
           });
 
-          // ✅ delete non-paid to free UNIQUE timeSlot
           if (reg && reg.paymentStatus !== "PAID") {
             await prisma.registration.delete({ where: { id: reg.id } });
           }
@@ -93,7 +88,6 @@ export async function POST(req: Request) {
       case "payment_intent.payment_failed": {
         const pi = event.data.object as Stripe.PaymentIntent;
 
-        // This is optional; keep it, but make it consistent
         await prisma.registration.updateMany({
           where: { stripePaymentIntentId: pi.id },
           data: { paymentStatus: "FAILED" },
@@ -109,7 +103,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true });
   } catch (err: any) {
     console.error("Webhook handler failed:", err);
-    // Stripe will retry on 500
     return NextResponse.json(
       { error: `Webhook handler failed: ${err.message ?? "Unknown error"}` },
       { status: 500 }

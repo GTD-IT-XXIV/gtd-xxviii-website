@@ -23,20 +23,17 @@ export async function POST(req: Request) {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // 1) Reuse an existing active pending reg for same email+slot
       const existing = await tx.registration.findFirst({
         where: {
           timeSlot,
           email,
           paymentStatus: "PENDING",
-          // only reuse if their hold is still active
-          OR: [{ slotHoldUntil: { gt: now } }, { slotHoldUntil: null }], // tolerate null if you haven't used it before
+          OR: [{ slotHoldUntil: { gt: now } }, { slotHoldUntil: null }],
         },
         select: { id: true, amountCents: true, bundleId: true },
       });
 
       if (existing) {
-        // refresh hold so they can retry safely
         await tx.registration.update({
           where: { id: existing.id },
           data: {
@@ -48,13 +45,12 @@ export async function POST(req: Request) {
         return { reused: true, registrationId: existing.id, amountCents: existing.amountCents };
       }
 
-      // 2) Enforce that the slot is free (not PAID, not actively held)
       const slotClaimed = await tx.registration.findFirst({
         where: {
           timeSlot,
           OR: [
             { paymentStatus: "PAID" },
-            { slotHoldUntil: { gt: now } }, // active holds block others
+            { slotHoldUntil: { gt: now } },
           ],
         },
         select: { id: true },
@@ -64,8 +60,6 @@ export async function POST(req: Request) {
         return { error: "This time slot has already been reserved. Please choose another slot." as const };
       }
 
-      // 3) Compute early bird price based on early claimed (PAID or active hold)
-      // NOTE: only count early-bird bundle, not all PAID.
       const earlyClaimed = await tx.registration.count({
         where: {
           bundleId: "early",
@@ -75,14 +69,13 @@ export async function POST(req: Request) {
 
       const amountCents = earlyClaimed < EARLY_BIRD_LIMIT ? EARLY_BIRD_CENTS : REGULAR_CENTS;
 
-      // 4) Create pending registration with holds
       const reg = await tx.registration.create({
         data: {
           teamName: data.teamName,
           captainName: data.captainName,
           telegram: data.telegram,
           phone: data.phone,
-          email, // normalized
+          email,
 
           member1: data.member1,
           member2: data.member2,
