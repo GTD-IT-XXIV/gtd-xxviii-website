@@ -120,8 +120,6 @@ export default function ConfirmPage() {
 
 
         <p className="mt-3 text-xs text-gray-500">
-          (For now, Confirm just clears the form and returns Home. Later we can
-          connect this to your backend + email.)
         </p>
       </div>
     </RegisterShell>

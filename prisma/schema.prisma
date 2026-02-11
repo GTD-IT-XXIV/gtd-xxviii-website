@@ -29,7 +29,7 @@ model Registration {
   member1            String       
   member2            String
   member3            String
-  member4            String
+  member4            String?
   member5            String?
 
   timeSlot           String?        @unique

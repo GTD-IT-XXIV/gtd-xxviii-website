@@ -7,11 +7,11 @@ if (!secretKey) throw new Error("Missing STRIPE_SECRET_KEY");
 const stripe = new Stripe(secretKey);
 
 const EARLY_BIRD_LIMIT = 3;
-const HOLD_MS = 5 * 60 * 1000;
+const HOLD_MS = 3 * 60 * 1000;
 
 const PRICES: Record<string, { name: string; amountCents: number }> = {
   early: { name: "Early Bird Bundle", amountCents: 4200 },
-  standard: { name: "Standard Bundle", amountCents: 4800 },
+  standard: { name: "Standard Bundle", amountCents: 50 },
 };
 
 export async function POST(req: Request) {

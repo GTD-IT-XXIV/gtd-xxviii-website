@@ -9,7 +9,7 @@ export type BookingDetails = {
   member1: string;
   member2: string;
   member3: string;
-  member4: string;
+  member4?: string; //optional
   member5?: string; // optional
 };
 
@@ -41,8 +41,7 @@ function coerceDetails(details: any): BookingDetails | null {
     "captainName" in details ||
     "member1" in details ||
     "member2" in details ||
-    "member3" in details ||
-    "member4" in details;
+    "member3" in details;
 
   if (hasNew) {
     return {
@@ -54,7 +53,7 @@ function coerceDetails(details: any): BookingDetails | null {
       member1: isNonEmptyString(details.member1) ? details.member1 : "",
       member2: isNonEmptyString(details.member2) ? details.member2 : "",
       member3: isNonEmptyString(details.member3) ? details.member3 : "",
-      member4: isNonEmptyString(details.member4) ? details.member4 : "",
+      member4: isNonEmptyString(details.member4) ? details.member4 : undefined,
       member5: isNonEmptyString(details.member5) ? details.member5 : undefined,
     };
   }
@@ -71,7 +70,7 @@ function coerceDetails(details: any): BookingDetails | null {
       member1: "",
       member2: "",
       member3: "",
-      member4: "",
+      member4: undefined,
       member5: undefined,
     };
   }

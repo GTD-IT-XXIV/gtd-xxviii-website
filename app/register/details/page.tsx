@@ -71,7 +71,7 @@ export default function DetailsPage() {
   const member1Ok = member1.trim().length >= 2;
   const member2Ok = member2.trim().length >= 2;
   const member3Ok = member3.trim().length >= 2;
-  const member4Ok = member4.trim().length >= 2;
+  const member4Ok = member4.trim().length === 0 || member4.trim().length >= 2;
   const member5Ok = member5.trim().length === 0 || member5.trim().length >= 2;
 
   const ok =
@@ -207,15 +207,17 @@ export default function DetailsPage() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-800">Member 4</label>
+          <label className="text-sm font-medium text-gray-800">Member 4 <span className="text-gray-500">(optional)</span></label>
           <input
             value={member4}
             onChange={(e) => setMember4(e.target.value)}
             onBlur={() => setTouched(true)}
             className={inputClass}
-            placeholder="Member 4 name"
+            placeholder="Member 4 name (optional)"
           />
-          {touched && !member4Ok && <p className={errClass}>Please enter Member 4.</p>}
+          {touched && !member5Ok && (
+            <p className={errClass}>If provided, Member 4 must be at least 2 characters.</p>
+          )}
         </div>
 
         <div>
