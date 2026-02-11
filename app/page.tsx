@@ -78,34 +78,38 @@ export default function Page() {
     }, 2000);
   };
 
-  const tapToPlay = () => {
+  const tapToPlay = (e?: any) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+
     const v = videoRef.current;
     if (!v) return;
 
-    // Make sure the layer is visible (we already do this via (cinematic || needsTap))
+    // Ensure the video layer is shown
+    setCinematic(true);
+
+    // Configure BEFORE play
     v.playsInline = true;
-    v.preload = "auto";
     v.muted = true;
     v.volume = 0.5;
     v.currentTime = 0;
 
+    // Optional, but helps some iOS cases
+    v.load();
+
+    // Optimistically remove overlay so it doesn't block UI
+    setNeedsTap(false);
+
     const p = v.play();
-    if (!p) {
-      // old fallback
-      setMuted(true);
-      setNeedsTap(false);
-      setExiting(true);
-      setCinematic(true);
-      return;
-    }
+    if (!p) return;
 
     p.then(() => {
       setMuted(true);
-      setNeedsTap(false);
+      // only after playback starts, do your “exit” animation if you want
       setExiting(true);
-      setCinematic(true);
-    }).catch(() => {
-      // still blocked
+    }).catch((err) => {
+      console.log("play() failed:", err?.name, err?.message, err);
+      // bring overlay back if still blocked / unsupported
       setNeedsTap(true);
     });
   };
@@ -156,10 +160,15 @@ export default function Page() {
 
         {/* Video overlay */}
         {needsTap && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center">
+          <div
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/30"
+            onTouchEnd={tapToPlay}
+            onClick={tapToPlay}
+          >
             <button
               type="button"
-              onPointerDown={tapToPlay}
+              onTouchEnd={tapToPlay}
+              onClick={tapToPlay}
               className="
                 px-8 py-4 rounded-xl
                 bg-black/60 text-white
@@ -167,13 +176,13 @@ export default function Page() {
                 backdrop-blur
                 text-sm tracking-widest
                 hover:bg-black/75
+                active:scale-[0.98]
               "
             >
               TAP TO PLAY
             </button>
           </div>
-          )}
-
+        )}
         <div
           className={`
             absolute inset-0 z-20
@@ -185,7 +194,7 @@ export default function Page() {
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
-            src={"/videos/Fight%20Scene.mp4"}
+            src={"/videos/Fight%20Scene_ios.mp4"}
             playsInline
             preload="auto"
             poster="/images/hero_bg.jpg"
