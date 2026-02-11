@@ -355,7 +355,7 @@ export default function Page() {
           <div className="aspect-video rounded-xl overflow-hidden shadow-2xl">
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/bxmDnn7lrnk"
+              src="https://www.youtube.com/embed/3uDC8M7C3rs"
               title="Arcanex Trailer"
               allowFullScreen
             />
