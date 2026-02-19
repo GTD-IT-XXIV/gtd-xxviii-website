@@ -387,7 +387,10 @@ export default function Page() {
                 About Arcanex
               </h2>
               <p className="text-lg text-gray-400 leading-relaxed">
-                This escape room POLOG Project “ARCANEX” is designed as a fun, collaborative game where participants work together, solve challenges, and connect through shared experiences that could bring the community closer in an interactive and engaging way.
+                In the shadows, evil awakens, seeking to conquer the world by stealing three legendary artifacts that hold unimaginable power. They must not fall into the wrong hands… or everything will collapse.
+              </p>
+              <p className="mt-4 text-lg text-gray-400 leading-relaxed">
+                Time is running out. The enemy is already moving. Will you answer the call?
               </p>
             </div>
 
