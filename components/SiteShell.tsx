@@ -187,9 +187,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 <Image
                   src="/images/black_logo.png"
                   alt="PINTU GTD Logo"
-                  width={44}
-                  height={44}
-                  className="object-contain scale-200 origin-right"
+                  width={110}
+                  height={110}
+                  className="object-contain w-11 h-11 scale-180 origin-right"
                 />
                 <span className="font-semibold tracking-wide text-black">PINTU GTD</span>
               </div>
