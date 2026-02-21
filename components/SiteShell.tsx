@@ -185,11 +185,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               {/* LEFT */}
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <Image
-                  src="/images/logo.png"
+                  src="/images/black_logo.png"
                   alt="PINTU GTD Logo"
                   width={44}
                   height={44}
-                  className="object-contain"
+                  className="object-contain scale-200 origin-right"
                 />
                 <span className="font-semibold tracking-wide text-black">PINTU GTD</span>
               </div>
@@ -201,13 +201,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
               {/* RIGHT */}
               <div className="flex items-center justify-center sm:justify-end gap-5 text-gray-600">
-                <Link href="#" aria-label="TikTok" className="hover:text-black">
+                <Link href="https://www.tiktok.com/@pintugtd" aria-label="TikTok" className="hover:text-black" target="_blank" rel="noopener noreferrer">
                   <Music2 className="h-5 w-5" />
                 </Link>
-                <Link href="#" aria-label="Instagram" className="hover:text-black">
+                <Link href="https://www.instagram.com/pintugtd" aria-label="Instagram" className="hover:text-black" target="_blank" rel="noopener noreferrer">
                   <Instagram className="h-5 w-5" />
                 </Link>
-                <Link href="#" aria-label="LinkedIn" className="hover:text-black">
+                <Link href="https://www.linkedin.com/company/pintu-gtd/" aria-label="LinkedIn" className="hover:text-black" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="h-5 w-5" />
                 </Link>
               </div>
