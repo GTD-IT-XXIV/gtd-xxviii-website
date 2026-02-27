@@ -47,5 +47,5 @@ export const SLOTS: Slot[] = [
   { id: "slot-15", label: "18:35 – 20:35", dateText: "Sun, Mar 1" },
   { id: "slot-16", label: "19:40 – 21:40", dateText: "Sun, Mar 1" },
   { id: "slot-17", label: "20:45 – 22:45", dateText: "Sun, Mar 1" },
-  { id: "SLOT-HOLDER", label: "NO SLOTS FOR SAT, DO NOT PICK THIS! Please another date", dateText: "Sat, Feb 28"}
+  { id: "SLOT-HOLDER", label: "NO SLOTS FOR SAT, DO NOT PICK THIS! Please select another date", dateText: "Sat, Feb 28"}
 ];
