@@ -132,8 +132,8 @@ export default function Page() {
           <div className="flex flex-col items-center text-center">
             <h1
               className="
-              mt-16
-                text-4xl sm:text-5xl md:text-5xl
+                mt-16
+                text-3xl sm:text-3xl md:text-5xl
                 [font-family:var(--font-uncial)]
                 tracking-widest
                 text-white
@@ -150,7 +150,7 @@ export default function Page() {
               <span className="absolute inset-0 bg-gradient-to-l from-[#961818] via-[#ff4d4d] to-transparent" />
               <span className="absolute inset-0 blur-md opacity-80 bg-gradient-to-l from-[#961818] via-[#ff4d4d] to-transparent" />
             </span>
-            <span className="text-white/90 tracking-widest text-[40px]">TOP 3</span>
+            <span className="text-white/90 tracking-widest text-[30px] md:text-[30px]">TOP 3</span>
             <span className="relative h-[2px] w-24 md:w-44">
               <span className="absolute inset-0 bg-gradient-to-r from-[#961818] via-[#ff4d4d] to-transparent" />
               <span className="absolute inset-0 blur-md opacity-80 bg-gradient-to-r from-[#961818] via-[#ff4d4d] to-transparent" />
