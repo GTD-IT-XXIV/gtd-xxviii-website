@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 
+type Status = "success" | "failed" | "waiting";
+
 type Row = {
   teamName: string;
   captainName: string;
   members: string[];
   escapeTimeRaw: string;
   escapeTimeSeconds: number;
+  status: Status;
 };
 
 function parseTimeToSeconds(s: string): number {
-  // supports "mm:ss" or "hh:mm:ss"
   const raw = (s || "").trim();
   if (!raw) return Number.POSITIVE_INFINITY;
 
@@ -29,10 +31,8 @@ function parseTimeToSeconds(s: string): number {
 
 function splitCsvLine(line: string): string[] {
   const raw = line ?? "";
-
-  // Auto-detect delimiter when there are no quotes involved (common with Sheets exports)
-  // Prefer comma, else tab, else semicolon.
   const hasQuotes = raw.includes('"');
+
   if (!hasQuotes) {
     let delim = ",";
     if (!raw.includes(",") && raw.includes("\t")) delim = "\t";
@@ -40,7 +40,6 @@ function splitCsvLine(line: string): string[] {
     return raw.split(delim).map((v) => v.trim());
   }
 
-  // Quoted CSV parser (commas inside quotes)
   const out: string[] = [];
   let cur = "";
   let inQuotes = false;
@@ -69,6 +68,13 @@ function splitCsvLine(line: string): string[] {
   return out.map((v) => v.trim());
 }
 
+function normalizeStatus(v: string): Status {
+  const s = (v || "").trim().toLowerCase();
+  if (s === "success") return "success";
+  if (s === "failed") return "failed";
+  return "waiting";
+}
+
 function csvToRows(csv: string): Row[] {
   const lines = csv
     .split("\n")
@@ -77,7 +83,14 @@ function csvToRows(csv: string): Row[] {
 
   if (lines.length < 2) return [];
 
-  const header = splitCsvLine(lines[1]).map((h) => h.toLowerCase());
+  // Find header row even if sheet has extra top rows
+  const headerIndex = lines.findIndex((l) => {
+    const low = l.toLowerCase();
+    return low.includes("team name") && low.includes("captain name") && low.includes("escape time");
+  });
+  if (headerIndex === -1) return [];
+
+  const header = splitCsvLine(lines[headerIndex]).map((h) => h.toLowerCase());
   const idx = (name: string) => header.indexOf(name.toLowerCase());
 
   const iTeam = idx("team name");
@@ -88,22 +101,28 @@ function csvToRows(csv: string): Row[] {
   const iM4 = idx("member 4");
   const iM5 = idx("member 5");
   const iTime = idx("escape time");
+  const iStatus = idx("status");
 
-  return lines.slice(1).map((line) => {
-    const cols = splitCsvLine(line);
+  const dataLines = lines.slice(headerIndex + 1);
 
-    const teamName = (cols[iTeam] || "").trim();
-    const captainName = (cols[iCaptain] || "").trim();
-    const members = [cols[iM1], cols[iM2], cols[iM3], cols[iM4], cols[iM5]]
-      .map((x) => (x || "").trim())
-      .filter(Boolean);
+  return dataLines
+    .map((line) => {
+      const cols = splitCsvLine(line);
 
-    const escapeTimeRaw = (cols[iTime] || "").trim();
-    const escapeTimeSeconds = parseTimeToSeconds(escapeTimeRaw);
+      const teamName = (cols[iTeam] || "").trim();
+      const captainName = (cols[iCaptain] || "").trim();
+      const members = [cols[iM1], cols[iM2], cols[iM3], cols[iM4], cols[iM5]]
+        .map((x) => (x || "").trim())
+        .filter(Boolean);
 
-    return { teamName, captainName, members, escapeTimeRaw, escapeTimeSeconds };
-  })
-  .filter((r) => r.teamName && Number.isFinite(r.escapeTimeSeconds));
+      const escapeTimeRaw = (cols[iTime] || "").trim();
+      const escapeTimeSeconds = parseTimeToSeconds(escapeTimeRaw);
+
+      const status = normalizeStatus(iStatus >= 0 ? cols[iStatus] : "");
+
+      return { teamName, captainName, members, escapeTimeRaw, escapeTimeSeconds, status };
+    })
+    .filter((r) => r.teamName);
 }
 
 export async function GET() {
@@ -125,12 +144,25 @@ export async function GET() {
   }
 
   const csv = await res.text();
-  const rows = csvToRows(csv)
+  const all = csvToRows(csv);
+
+  const goodRows = all
+    .filter((r) => r.status === "success" && Number.isFinite(r.escapeTimeSeconds))
     .sort((a, b) => a.escapeTimeSeconds - b.escapeTimeSeconds);
+
+  const badRows = all
+    .filter((r) => r.status === "failed" && Number.isFinite(r.escapeTimeSeconds))
+    .sort((a, b) => a.escapeTimeSeconds - b.escapeTimeSeconds);
+
+  const waitingRows = all
+    .filter((r) => r.status === "waiting")
+    .sort((a, b) => a.teamName.localeCompare(b.teamName));
 
   return NextResponse.json({
     updatedAt: new Date().toISOString(),
-    rows,
-    top3: rows.slice(0, 3),
+    top3: goodRows.slice(0, 3),
+    goodRows,
+    badRows,
+    waitingRows,
   });
 }
