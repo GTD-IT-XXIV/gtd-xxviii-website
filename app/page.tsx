@@ -306,7 +306,7 @@ export default function Page() {
             <p className="mt-5 text-base sm:text-lg md:text-[22px] text-gray-300">28 February – 1 March</p>
 
             <Link
-              href="/register"
+              href="/leaderboard"
               className="
                 mt-10 inline-block
                 px-7 py-3 text-base sm:px-10 sm:py-4 sm:text-lg
@@ -318,7 +318,7 @@ export default function Page() {
                 hover:shadow-[0_0_20px_rgba(255,77,77,0.6)]
               "
             >
-              REGISTER
+              LEADERBOARD
             </Link>
           </div>
         </div>

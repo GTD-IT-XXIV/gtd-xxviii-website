@@ -75,8 +75,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                   Home
                 </Link>
 
-                <Link href="/register" className={linkClass("/register")}>
-                  Register
+                <Link href="/leaderboard" className={linkClass("/leaderboard")}>
+                  Leaderboard
                 </Link>
 
                 <Link href="/about" className={linkClass("/about")}>
@@ -158,11 +158,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                   Home
                 </Link>
                 <Link
-                  href="/register"
+                  href="/leaderboard"
                   onClick={() => setMobileOpen(false)}
                   className="px-4 py-3 text-base text-white/90 hover:bg-white/5"
                 >
-                  Register
+                  Leaderboard
                 </Link>
                 <Link
                   href="/about"
