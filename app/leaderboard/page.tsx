@@ -10,6 +10,7 @@ type Row = {
   captainName: string;
   members: string[];
   escapeTimeRaw: string;
+  escapeTimeFormat: string;
   escapeTimeSeconds: number;
   status: Status;
 };
@@ -83,7 +84,7 @@ export default function Page() {
                 }
               `}
             >
-              {r.escapeTimeRaw}
+              {r.escapeTimeFormat}
             </p>
           </div>
         </div>
@@ -172,7 +173,7 @@ export default function Page() {
                       </span>
                     </td>
 
-                    {showTime && <td className="px-5 py-4 text-white/90">{r.escapeTimeRaw}</td>}
+                    {showTime && <td className="px-5 py-4 text-white/90">{r.escapeTimeFormat}</td>}
                   </tr>
                 ))}
 

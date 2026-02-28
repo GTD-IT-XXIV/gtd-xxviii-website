@@ -7,6 +7,7 @@ type Row = {
   captainName: string;
   members: string[];
   escapeTimeRaw: string;
+  escapeTimeFormat: string;
   escapeTimeSeconds: number;
   status: Status;
 };
@@ -75,6 +76,19 @@ function normalizeStatus(v: string): Status {
   return "waiting";
 }
 
+function formatTimeHM(raw: string) {
+  if (!raw) return "";
+
+  const [hh = "0", mm = "0"] = raw.split(":");
+  const h = parseInt(hh, 10);
+  const m = parseInt(mm, 10);
+
+  const hPart = h ? `${h}h` : "";
+  const mPart = m ? `${m}m` : "";
+
+  return [hPart, mPart].filter(Boolean).join(" ");
+}
+
 function csvToRows(csv: string): Row[] {
   const lines = csv
     .split("\n")
@@ -117,10 +131,11 @@ function csvToRows(csv: string): Row[] {
 
       const escapeTimeRaw = (cols[iTime] || "").trim();
       const escapeTimeSeconds = parseTimeToSeconds(escapeTimeRaw);
+      const escapeTimeFormat = formatTimeHM((cols[iTime] || "").trim());
 
       const status = normalizeStatus(iStatus >= 0 ? cols[iStatus] : "");
 
-      return { teamName, captainName, members, escapeTimeRaw, escapeTimeSeconds, status };
+      return { teamName, captainName, members, escapeTimeRaw, escapeTimeFormat, escapeTimeSeconds, status };
     })
     .filter((r) => r.teamName);
 }
